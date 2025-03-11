@@ -27,7 +27,9 @@ public class Postfix {
                         } else{
                             throw new RuntimeException("You cannot divide by 0.");
                         }
-                    } else{
+                    } else if(current.equals('^')){
+                        result = Math.pow(second, first);
+                    }else{
                         throw new IllegalArgumentException("Expression is malformed.");
                     }
                     if(result != null){
@@ -46,7 +48,7 @@ public class Postfix {
         return stack.getFirst();
     }
     public static void main(String[] args){
-        // String myString = "5.0 b 3.0 -";
+        // String myString = "5.0 3.0 -";
         // ArrayDeque<Object> test = Tokenizer.readTokens(myString);
         // System.out.println(test);
         // try{

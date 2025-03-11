@@ -11,36 +11,27 @@ public class Infix {
             Object current = tokens.removeFirst();
             if(current instanceof Double){
                 output.addLast((Double)current);
-            } else if(current.equals('+')||current.equals('-')||current.equals('*')||current.equals('/')){
+                System.out.println("Output during double: " + output);
+                System.out.println("Stack during double: " + stack);
+            } else if(current.equals('+')||current.equals('-')||current.equals('*')||current.equals('/')||current.equals('^')){
                 Character queueOp = (Character) current;
                 if(!stack.isEmpty()){
-                    int queueNum;
-                    int stackNum;
-                    if(queueOp.equals('+')||queueOp.equals('-')){
-                        queueNum = 1;
-                    } else {
-                        queueNum = 2;
+                    System.out.println("Stack not empty: " + stack);
+                    Character stackOp = stack.getFirst();
+                    int queueNum = precedence(queueOp);
+                    while(!stack.isEmpty() && queueNum <= precedence(stack.getFirst())){
+                        System.out.println("Stack during while: " + stack);
+                        output.addLast(stack.removeFirst());
                     }
-                    if(stack.peekFirst().equals('+')||stack.peekFirst().equals('-')){
-                        stackNum = 1;
-                    } else{
-                        stackNum = 2;
-                    }
-                    while(queueNum<stackNum){
-                        output.add(stack.removeFirst());
-                        if(stack.peekFirst().equals('+')||stack.peekFirst().equals('-')){
-                            stackNum = 1;
-                        } else{
-                            stackNum = 2;
-                        }
-                    }
+                    stack.addFirst(queueOp);
+                } else{
                     stack.addFirst(queueOp);
                 }
             } else if(current.equals('(')){
-                stack.add((Character) current);
+                stack.addFirst((Character) current);
             } else if(current.equals(')')){
-                while(!stack.peekFirst().equals('(')){
-                    output.add(stack.removeFirst());
+                while(!stack.getFirst().equals('(')){
+                    output.addLast(stack.removeFirst());
                     if(stack.isEmpty()){
                         throw new IllegalArgumentException("Mismatched parentheses.");
                     }
@@ -49,15 +40,35 @@ public class Infix {
             }
         }
         while(!stack.isEmpty()){
-            if(stack.peekFirst().equals('(')||stack.peekFirst().equals(')')){
+            if(stack.getFirst().equals('(')||stack.getFirst().equals(')')){
                 throw new IllegalArgumentException("Mismatched parentheses.");
-            } else if(stack.peekFirst().equals('+')||stack.peekFirst().equals('-')||stack.peekFirst().equals('*')||stack.peekFirst().equals('/')){
+            } else if(stack.getFirst().equals('+')||stack.getFirst().equals('-')||stack.getFirst().equals('*')||stack.getFirst().equals('/')){
                 output.addLast(stack.removeFirst());
                 }
         }
+        System.out.println(output);
         Double result = Postfix.postfix(output);
         return result;
     }
 
-}
+    public static int precedence(Character operator){
+        int result;
+            if(operator.equals('/')||operator.equals('*')){
+                result = 2;
+            }else if(operator.equals('+')||operator.equals('-')){
+                result = 1;
+            } else if(operator.equals('^')){
+                result = 3;
+            } else{
+                result = 0;
+            }
+        return result;
+    }
 
+    public static void main(String[] args) {
+        String test = "3*2^6+7";
+        ArrayDeque<Object> test2 = Tokenizer.readTokens(test);
+        System.out.println(test2);
+        System.out.println(Infix.infixToPostfix(test2));
+    }
+}
