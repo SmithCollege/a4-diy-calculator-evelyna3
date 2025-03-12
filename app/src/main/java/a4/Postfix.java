@@ -28,7 +28,7 @@ public class Postfix {
                             throw new RuntimeException("You cannot divide by 0.");
                         }
                     } else if(current.equals('^')){
-                        result = Math.pow(second, first);
+                        result = Math.pow(first, second);
                     }else{
                         throw new IllegalArgumentException("Expression is malformed.");
                     }

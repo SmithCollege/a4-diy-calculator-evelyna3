@@ -11,16 +11,12 @@ public class Infix {
             Object current = tokens.removeFirst();
             if(current instanceof Double){
                 output.addLast((Double)current);
-                System.out.println("Output during double: " + output);
-                System.out.println("Stack during double: " + stack);
             } else if(current.equals('+')||current.equals('-')||current.equals('*')||current.equals('/')||current.equals('^')){
                 Character queueOp = (Character) current;
                 if(!stack.isEmpty()){
-                    System.out.println("Stack not empty: " + stack);
                     Character stackOp = stack.getFirst();
                     int queueNum = precedence(queueOp);
-                    while(!stack.isEmpty() && queueNum <= precedence(stack.getFirst())){
-                        System.out.println("Stack during while: " + stack);
+                    while(!stack.isEmpty() && queueNum <= precedence(stackOp)){
                         output.addLast(stack.removeFirst());
                     }
                     stack.addFirst(queueOp);
@@ -30,23 +26,23 @@ public class Infix {
             } else if(current.equals('(')){
                 stack.addFirst((Character) current);
             } else if(current.equals(')')){
-                while(!stack.getFirst().equals('(')){
+                while (!stack.isEmpty() && !stack.getFirst().equals('(')) {
                     output.addLast(stack.removeFirst());
-                    if(stack.isEmpty()){
-                        throw new IllegalArgumentException("Mismatched parentheses.");
-                    }
                 }
-                stack.removeFirst();
+                if (stack.isEmpty()) {
+                    throw new IllegalArgumentException("Mismatched parentheses.");
+                }
+                    stack.removeFirst();
+                 }
+            } 
+            while (!stack.isEmpty()) {
+                Character op = stack.removeFirst();
+                if (op.equals('(') || op.equals(')')) {
+                    throw new IllegalArgumentException("Mismatched parentheses.");
+                }
+                output.addLast(op);
             }
-        }
-        while(!stack.isEmpty()){
-            if(stack.getFirst().equals('(')||stack.getFirst().equals(')')){
-                throw new IllegalArgumentException("Mismatched parentheses.");
-            } else if(stack.getFirst().equals('+')||stack.getFirst().equals('-')||stack.getFirst().equals('*')||stack.getFirst().equals('/')){
-                output.addLast(stack.removeFirst());
-                }
-        }
-        System.out.println(output);
+
         Double result = Postfix.postfix(output);
         return result;
     }
@@ -66,9 +62,10 @@ public class Infix {
     }
 
     public static void main(String[] args) {
-        String test = "3*2^6+7";
+        String test = "3*(2^6+(8+7))";
         ArrayDeque<Object> test2 = Tokenizer.readTokens(test);
         System.out.println(test2);
         System.out.println(Infix.infixToPostfix(test2));
+        
     }
 }
