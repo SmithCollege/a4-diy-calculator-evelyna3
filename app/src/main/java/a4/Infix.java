@@ -5,24 +5,21 @@ import java.util.ArrayDeque;
 public class Infix {
 
     public static Double infixToPostfix(ArrayDeque<Object> tokens) {
-        ArrayDeque<Object> output = new ArrayDeque<Object>();
-        ArrayDeque<Character> stack = new ArrayDeque<Character>();
+        ArrayDeque<Object> output = new ArrayDeque<>();
+        ArrayDeque<Character> stack = new ArrayDeque<>();
         while(!tokens.isEmpty()){
             Object current = tokens.removeFirst();
             if(current instanceof Double){
                 output.addLast((Double)current);
-            } else if(current.equals('+')||current.equals('-')||current.equals('*')||current.equals('/')||current.equals('^')){
+            } else if(current instanceof Character){
                 Character queueOp = (Character) current;
-                if(!stack.isEmpty()){
-                    Character stackOp = stack.getFirst();
+                if(current.equals('+')||current.equals('-')||current.equals('*')||current.equals('/')||current.equals('^')){
                     int queueNum = precedence(queueOp);
-                    while(!stack.isEmpty() && queueNum <= precedence(stackOp)){
+                    while(!stack.isEmpty() && (queueNum < precedence(stack.getFirst()) || 
+                    (queueOp != '^' && queueNum <= precedence(stack.getFirst())))){
                         output.addLast(stack.removeFirst());
                     }
                     stack.addFirst(queueOp);
-                } else{
-                    stack.addFirst(queueOp);
-                }
             } else if(current.equals('(')){
                 stack.addFirst((Character) current);
             } else if(current.equals(')')){
@@ -30,14 +27,15 @@ public class Infix {
                     output.addLast(stack.removeFirst());
                 }
                 if (stack.isEmpty()) {
-                    throw new IllegalArgumentException("Mismatched parentheses.");
+                    throw new IllegalArgumentException("Mismatched parentheses.1");
                 }
                     stack.removeFirst();
-                 }
+                }
+            }
             } 
             while (!stack.isEmpty()) {
                 Character op = stack.removeFirst();
-                if (op.equals('(') || op.equals(')')) {
+                if (op == '(' || op == ')') {
                     throw new IllegalArgumentException("Mismatched parentheses.");
                 }
                 output.addLast(op);
